@@ -38,13 +38,14 @@
 #endif
 
 
-#define SSD1351_SPICLOCK 24000000
+#define SSD1351_SPICLOCK 18000000
 // These #defines are DEPRECATED but present for older code compatibility:
 #define SSD1351WIDTH  128 ///< DEPRECATED screen width
 #define SSD1351HEIGHT 128 ///< DEPRECATED screen height, set to 96 for 1.27"
 // (NEW CODE SHOULD IGNORE THIS, USE THE CONSTRUCTORS THAT ACCEPT WIDTH
 // AND HEIGHT ARGUMENTS).
 
+#define SSD1351_CMD_NOP            0x00
 #define SSD1351_CMD_SETCOLUMN      0x15 ///< See datasheet
 #define SSD1351_CMD_SETROW         0x75 ///< See datasheet
 #define SSD1351_CMD_WRITERAM       0x5C ///< See datasheet

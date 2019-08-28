@@ -471,7 +471,7 @@ void SSD1351_t3::begin(uint32_t freq)
 		_pspi->setSCK(_sclk);
 		_pspi->begin();
 		//Serial.println("After SPI begin");
-		_spiSettings = SPISettings(SSD1351_SPICLOCK, MSBFIRST, mode);
+		_spiSettings = SPISettings(freq, MSBFIRST, SPI_MODE0);
 		// See if both CS and DC are valid CS pins.
 		if (_pspi->pinIsChipSelect(_rs, _cs)) {
 			pcs_data = _pspi->setCS(_cs);
@@ -534,7 +534,7 @@ void SSD1351_t3::begin(uint32_t freq)
 		hwSPI = true;
 		_pspi->begin();
 		_pending_rx_count = 0;
-		_spiSettings = SPISettings(SSD1351_SPICLOCK, MSBFIRST, SPI_MODE0);
+		_spiSettings = SPISettings(freq, MSBFIRST, SPI_MODE0);
 		_pspi->beginTransaction(_spiSettings); // Should have our settings. 
 		_pspi->transfer(0);	// hack to see if it will actually change then...
 		_pspi->endTransaction();
@@ -602,7 +602,7 @@ void SSD1351_t3::begin(uint32_t freq)
 	pinMode(_rs, OUTPUT);
 	rsport    = portOutputRegister(digitalPinToPort(_rs));
 	rspinmask = digitalPinToBitMask(_rs);
-	_spiSettings = SPISettings(SSD1351_SPICLOCK, MSBFIRST, mode);
+	_spiSettings = SPISettings(freq, MSBFIRST, SPI_MODE0);
 
 	if(hwSPI) { // Using hardware SPI
 		if (_sclk == 14) SPI.setSCK(14);
@@ -911,7 +911,7 @@ void SSD1351_t3::process_dma_interrupt(void) {
 		// We are in single refresh mode or the user has called cancel so
 		// Lets try to release the CS pin
 		while (((_pkinetisk_spi->SR) & (15 << 12)) > _fifo_full_test) ; // wait if FIFO full
-		writecommand_last(SSD1351_NOP);
+		writecommand_last(SSD1351_CMD_NOP);
 		endSPITransaction();
 		_dma_state &= ~ST77XX_DMA_ACTIVE;
 		_dmaActiveDisplay[_spi_num] = 0;	// We don't have a display active any more... 
@@ -960,7 +960,7 @@ void SSD1351_t3::process_dma_interrupt(void) {
 			// Serial.printf("Output NOP (SR %x CR %x FSR %x FCR %x %x TCR:%x)\n", _pimxrt_spi->SR, _pimxrt_spi->CR, _pimxrt_spi->FSR, 
 			//	_pimxrt_spi->FCR, _spi_fcr_save, _pimxrt_spi->TCR);
 			_pending_rx_count = 0;	// Make sure count is zero
-//			writecommand_last(SSD1351_NOP);
+//			writecommand_last(SSD1351_CMD_NOP);
 
 			// Serial.println("Do End transaction");
 			endSPITransaction();
@@ -1022,7 +1022,7 @@ void SSD1351_t3::process_dma_interrupt(void) {
 		_pkinetisk_spi->SR = 0xFF0F0000;
 		_pkinetisk_spi->CTAR0  &= ~(SPI_CTAR_FMSZ(8)); 	// Hack restore back to 8 bits
 
-		writecommand_last(SSD1351_NOP);
+		writecommand_last(SSD1351_CMD_NOP);
 		endSPITransaction();
 		_dma_state &= ~ST77XX_DMA_ACTIVE;
 		_dmaActiveDisplay[_spi_num] = 0;	// We don't have a display active any more... 
